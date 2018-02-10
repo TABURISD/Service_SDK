@@ -7,12 +7,12 @@ void ANSItoUTF8(string &strAnsi);
 int user_group;//用户权限组
 int user_role;
 
-const char* str = "{\"uploadid\": \"UP000000\",\"code\": 100,\"msg\": \"\",\"files\": \"\"}";
+string str = "{\"uploadid\": \"UP000000\",\"code\": 100,\"msg\": \"\",\"files\": \"\"}???????????????????????????????????????????";
 
 Json::Reader reader;
 Json::Value root;
 
-string login(string user,string pwd,string myControllerId)
+string login(string user,string pwd,string myControllerId)//用户登录
 {
 	if ((user.length() != 6) || (pwd.length() != 6))
 		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号或密码长度有误\"}";
@@ -73,6 +73,69 @@ string login(string user,string pwd,string myControllerId)
 	} else {
 		return result;
 	}
+}
+
+string getRoadList(void)
+{
+	string strFormData = "";
+	CInternetSession session(_T("session"));
+	INTERNET_PORT nPort = 10001;
+	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
+	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_GET, _T("/wapi/gps/roads"));
+	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
+	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	DWORD dwRet;
+	pFile->QueryInfoStatusCode(dwRet);
+	char szBuff[2048];
+	string result;
+	string getdata = "";
+	if (dwRet == HTTP_STATUS_OK)
+	{
+		UINT nRead;
+		while ((nRead = pFile->Read(szBuff, 2047))>0)
+		{
+			getdata += szBuff;
+		}
+	}
+	UTF8toANSI(getdata);
+	result = getdata;
+
+	pFile->Close();
+	delete pFile;
+	pFile = NULL;
+	pHttpConnect->Close();
+	delete pHttpConnect;
+	pHttpConnect = NULL;
+	session.Close();
+
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+
+	if (!reader.parse(result, root, false))
+	{
+		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
+	}
+
+	//int size = root["Result"].size();
+	//int j = 0;
+	//CString str;
+	//for (int i = 0; i<size; i++)
+	//{
+	//	road[i] = root["Result"][i]["ID"].asInt();
+	//	string name = root["Result"][i]["Name"].asString();
+	//	str = name.c_str();
+	//	m_chose1.InsertString(i, str);
+
+	//	j = 0;
+	//	city[2 * i] = root["Result"][i]["Endpoint"][j]["Name"].asString();
+	//	j = 1;
+	//	city[2 * i + 1] = root["Result"][i]["Endpoint"][j]["Name"].asString();
+	//}
+	//city1 = city[0];
+	//city2 = city[1];
+
+	return result;
 }
 
 int test(void)

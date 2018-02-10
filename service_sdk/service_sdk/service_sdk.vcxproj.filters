@@ -27,12 +27,18 @@
     <ClInclude Include="service_sdk.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="service_sdk.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
