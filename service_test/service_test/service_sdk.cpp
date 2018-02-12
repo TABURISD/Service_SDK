@@ -138,6 +138,71 @@ string getRoadList(void)
 	return result;
 }
 
+string getDeviceList(void)
+{
+	string temp,strdata;
+	strdata = "/wapi/bollard/bollards?Group=" + to_string(user_group);
+	string strFormData = "";
+	CInternetSession session(_T("session"));
+	INTERNET_PORT nPort = 10001;
+	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
+	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_GET, (CString)strdata.c_str());
+	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
+	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	DWORD dwRet;
+	pFile->QueryInfoStatusCode(dwRet);
+	char szBuff[4096];
+	string result;
+	string getdata = "";
+	if (dwRet == HTTP_STATUS_OK)
+	{
+		UINT nRead;
+		while ((nRead = pFile->Read(szBuff, 4095))>0)
+		{
+			getdata += szBuff;
+		}
+	}
+	UTF8toANSI(getdata);
+	result = getdata;
+
+	pFile->Close();
+	delete pFile;
+	pFile = NULL;
+	pHttpConnect->Close();
+	delete pHttpConnect;
+	pHttpConnect = NULL;
+	session.Close();
+
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+
+	if (!reader.parse(result, root, false))
+	{
+		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
+	}
+
+	//int size = root["Result"].size();
+	//int j = 0;
+	//CString str;
+	//for (int i = 0; i<size; i++)
+	//{
+	//	road[i] = root["Result"][i]["ID"].asInt();
+	//	string name = root["Result"][i]["Name"].asString();
+	//	str = name.c_str();
+	//	m_chose1.InsertString(i, str);
+
+	//	j = 0;
+	//	city[2 * i] = root["Result"][i]["Endpoint"][j]["Name"].asString();
+	//	j = 1;
+	//	city[2 * i + 1] = root["Result"][i]["Endpoint"][j]["Name"].asString();
+	//}
+	//city1 = city[0];
+	//city2 = city[1];
+
+	return result;
+}
+
 int test(void)
 {
 	int result;

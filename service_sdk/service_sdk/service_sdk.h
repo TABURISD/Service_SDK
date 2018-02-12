@@ -6,11 +6,13 @@
 #include "json/json.h"
 #include "afxinet.h"
 
+using namespace std;
 using std::string;
 
 extern int test(void);
 extern int test1(void);
 extern string login(string user, string pwd, string myControllerId);
 extern string getRoadList(void);
+extern string getDeviceList(void);
 
 #endif

@@ -13,11 +13,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	string temp1,temp2;
 
 	temp = test();
-	temp1 = login("444444", "44444", pwd);
-	temp1 = login("444444", "444443", pwd);
-	temp1 = login("444444", "444444", pwd);
-	temp1 = login("444444", "444444", pwd);
+	//temp1 = login("444444", "44444", pwd);
+	//temp1 = login("444444", "444443", pwd);
+	//temp1 = login("444444", "444444", pwd);
+	//temp1 = login("444444", "444444", pwd);
 	temp2 = getRoadList();
+	temp2 = getDeviceList();
 
 	return 0;
 }
