@@ -3,6 +3,7 @@
 
 void UTF8toANSI(string &strUTF8);
 void ANSItoUTF8(string &strAnsi);
+bool isAllDigit(string str);
 
 int user_group;//用户权限组
 int user_role;
@@ -15,7 +16,9 @@ Json::Value root;
 string login(string user,string pwd,string myControllerId)//用户登录
 {
 	if ((user.length() != 6) || (pwd.length() != 6))
-		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号或密码长度有误\"}";
+		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号与密码应为6位数字\"}";
+	if ((!isAllDigit(user)) || (!isAllDigit(pwd)))
+		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号与密码应为6位数字\"}";
 	
 	MD5 md5;//加密用户密码
 	md5.update(pwd);
@@ -203,6 +206,169 @@ string getDeviceList(void)
 	return result;
 }
 
+string getUserList(void)
+{
+	string temp, strdata;
+	strdata = "/wapi/group/users?Group=" + to_string(user_group);
+	string strFormData = "";
+	CInternetSession session(_T("session"));
+	INTERNET_PORT nPort = 10001;
+	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
+	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_GET, (CString)strdata.c_str());
+	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
+	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	DWORD dwRet;
+	pFile->QueryInfoStatusCode(dwRet);
+	char szBuff[4096];
+	string result;
+	string getdata = "";
+	if (dwRet == HTTP_STATUS_OK)
+	{
+		UINT nRead;
+		while ((nRead = pFile->Read(szBuff, 4095))>0)
+		{
+			getdata += szBuff;
+		}
+	}
+	UTF8toANSI(getdata);
+	result = getdata;
+
+	pFile->Close();
+	delete pFile;
+	pFile = NULL;
+	pHttpConnect->Close();
+	delete pHttpConnect;
+	pHttpConnect = NULL;
+	session.Close();
+
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+
+	if (!reader.parse(result, root, false))
+	{
+		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
+	}
+
+	//int size = root["Result"].size();
+	//int j = 0;
+	//CString str;
+	//for (int i = 0; i<size; i++)
+	//{
+	//	road[i] = root["Result"][i]["ID"].asInt();
+	//	string name = root["Result"][i]["Name"].asString();
+	//	str = name.c_str();
+	//	m_chose1.InsertString(i, str);
+
+	//	j = 0;
+	//	city[2 * i] = root["Result"][i]["Endpoint"][j]["Name"].asString();
+	//	j = 1;
+	//	city[2 * i + 1] = root["Result"][i]["Endpoint"][j]["Name"].asString();
+	//}
+	//city1 = city[0];
+	//city2 = city[1];
+
+	return result;
+}
+
+string addUser(string userName, string pwd, string usernick, string group, string role)
+{
+	if ((userName.length() != 6) || (pwd.length() != 6) || (role.length() != 3))
+		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号与密码应为6位数字、权限应为3位数字\"}";
+	if ((!isAllDigit(userName)) || (!isAllDigit(pwd)) || (!isAllDigit(group))|| (!isAllDigit(role)))
+		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号、密码、组号、权限应为数字\"}";
+
+	string strFormData = "Username=" + userName + "&Password=" + pwd + "&Nick=" + usernick + "&Group=" + to_string(user_group) + "&Role=" + role;
+	CInternetSession session(_T("session"));
+	INTERNET_PORT nPort = 10001;
+	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
+	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_POST, _T("/wapi/group/users"));
+	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
+	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	DWORD dwRet;
+	pFile->QueryInfoStatusCode(dwRet);
+	char szBuff[2048];
+	string result;
+	string get_temp = "";
+	if (dwRet == HTTP_STATUS_OK)
+	{
+		UINT nRead;
+		while ((nRead = pFile->Read(szBuff, 2047))>0)
+		{
+			get_temp += szBuff;
+		}
+	}
+	UTF8toANSI(get_temp);
+	result = get_temp;
+	pFile->Close();
+	delete pFile;
+	pFile = NULL;
+	pHttpConnect->Close();
+	delete pHttpConnect;
+	pHttpConnect = NULL;
+	session.Close();
+
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+
+	if (!reader.parse(result, root, false))
+	{
+		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
+	}
+
+	return result;
+}
+
+string deleteUser(string userName)
+{
+	if ((userName.length() != 6))
+		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号应为6位数字\"}";
+	if ((!isAllDigit(userName)))
+		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号应为6位数字\"}";
+
+	string strFormData = "Group=" + to_string(user_group) + "&Username=" + userName;
+	CInternetSession session(_T("session"));
+	INTERNET_PORT nPort = 10001;
+	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
+	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_DELETE, _T("/wapi/group/users"));
+	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
+	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	DWORD dwRet;
+	pFile->QueryInfoStatusCode(dwRet);
+	char szBuff[2048];
+	string result;
+	string get_temp = "";
+	if (dwRet == HTTP_STATUS_OK)
+	{
+		UINT nRead;
+		while ((nRead = pFile->Read(szBuff, 2047))>0)
+		{
+			get_temp += szBuff;
+		}
+	}
+	UTF8toANSI(get_temp);
+	result = get_temp;
+	pFile->Close();
+	delete pFile;
+	pFile = NULL;
+	pHttpConnect->Close();
+	delete pHttpConnect;
+	pHttpConnect = NULL;
+	session.Close();
+
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+
+	if (!reader.parse(result, root, false))
+	{
+		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
+	}
+
+	return result;
+}
+
 int test(void)
 {
 	int result;
@@ -259,4 +425,17 @@ void ANSItoUTF8(string &strAnsi)
 	//内存清理  
 	delete[]wszBuffer;
 	delete[]szBuffer;
+}
+
+bool isAllDigit(string str)
+{
+	int i;
+	for (i = 0; i != str.length(); i++)
+	{
+		if (!isdigit(str[i]))
+		{
+			return false;
+		}
+	}
+	return true;
 }

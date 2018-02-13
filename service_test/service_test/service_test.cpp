@@ -16,9 +16,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	//temp1 = login("444444", "44444", pwd);
 	//temp1 = login("444444", "444443", pwd);
 	//temp1 = login("444444", "444444", pwd);
-	//temp1 = login("444444", "444444", pwd);
+	temp1 = login("444444", "444444", pwd);
 	temp2 = getRoadList();
 	temp2 = getDeviceList();
+	temp2 = getUserList();
+
+	//temp2 = addUser("199563", "199563", "199563", "4", "103");
+	//temp2 = addUser("120830", "120830", "120830", "4", "107");
+	temp2 = deleteUser("199563");
 
 	return 0;
 }

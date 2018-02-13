@@ -14,5 +14,8 @@ extern int test1(void);
 extern string login(string user, string pwd, string myControllerId);
 extern string getRoadList(void);
 extern string getDeviceList(void);
+extern string getUserList(void);
+extern string addUser(string userName, string pwd, string nick, string group, string role);
+extern string deleteUser(string userName);
 
 #endif
