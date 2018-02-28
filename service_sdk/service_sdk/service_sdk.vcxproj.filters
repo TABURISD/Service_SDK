@@ -45,4 +45,15 @@
   <ItemGroup>
     <None Include="..\jsoncpp-src-0.5.0\src\lib_json\sconscript" />
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="OBJS.lib">
+      <Filter>资源文件</Filter>
+    </Library>
+    <Library Include="paho-mqtt3a.lib">
+      <Filter>资源文件</Filter>
+    </Library>
+    <Library Include="lib_json.lib">
+      <Filter>资源文件</Filter>
+    </Library>
+  </ItemGroup>
 </Project>

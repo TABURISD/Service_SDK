@@ -35,14 +35,16 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="service_test.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="md5.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="service_sdk.cpp">
+    <ClCompile Include="service_test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\service_sdk\Release\service_sdk.lib">
+      <Filter>资源文件</Filter>
+    </Library>
   </ItemGroup>
 </Project>

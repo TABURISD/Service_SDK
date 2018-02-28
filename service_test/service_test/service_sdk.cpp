@@ -28,12 +28,17 @@ string login(string user,string pwd,string myControllerId)//用户登录
 	string temp = user;
 	string strFormData = "Username=" + temp + "&Password=" + passwordval;
 
+	bool httpresult;
+
 	CInternetSession session(_T("session"));
 	INTERNET_PORT nPort = 10001;
 	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
 	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_POST, _T("/wapi/auth/session"));
 	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
-	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+	httpresult=pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	if (!httpresult)
+		return "{ \"ErrCode\":20000017，\"ErrMsg\":\"服务器连接失败\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -59,7 +64,7 @@ string login(string user,string pwd,string myControllerId)//用户登录
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//解析所有路桩信息
+	Json::Reader reader;//解析信息
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
@@ -80,13 +85,18 @@ string login(string user,string pwd,string myControllerId)//用户登录
 
 string getRoadList(void)
 {
+	bool httpresult;
+
 	string strFormData = "";
 	CInternetSession session(_T("session"));
 	INTERNET_PORT nPort = 10001;
 	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
 	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_GET, _T("/wapi/gps/roads"));
 	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
-	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	if (!httpresult)
+		return "{ \"ErrCode\":20000017，\"ErrMsg\":\"服务器连接失败\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -112,7 +122,7 @@ string getRoadList(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//解析道路信息
+	Json::Reader reader;//解析信息
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
@@ -120,29 +130,13 @@ string getRoadList(void)
 		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
 	}
 
-	//int size = root["Result"].size();
-	//int j = 0;
-	//CString str;
-	//for (int i = 0; i<size; i++)
-	//{
-	//	road[i] = root["Result"][i]["ID"].asInt();
-	//	string name = root["Result"][i]["Name"].asString();
-	//	str = name.c_str();
-	//	m_chose1.InsertString(i, str);
-
-	//	j = 0;
-	//	city[2 * i] = root["Result"][i]["Endpoint"][j]["Name"].asString();
-	//	j = 1;
-	//	city[2 * i + 1] = root["Result"][i]["Endpoint"][j]["Name"].asString();
-	//}
-	//city1 = city[0];
-	//city2 = city[1];
-
 	return result;
 }
 
 string getDeviceList(void)
 {
+	bool httpresult;
+
 	string temp,strdata;
 	strdata = "/wapi/bollard/bollards?Group=" + to_string(user_group);
 	string strFormData = "";
@@ -151,7 +145,10 @@ string getDeviceList(void)
 	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
 	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_GET, (CString)strdata.c_str());
 	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
-	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	if (!httpresult)
+		return "{ \"ErrCode\":20000017，\"ErrMsg\":\"服务器连接失败\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -177,7 +174,7 @@ string getDeviceList(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//解析道路信息
+	Json::Reader reader;//解析信息
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
@@ -185,29 +182,13 @@ string getDeviceList(void)
 		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
 	}
 
-	//int size = root["Result"].size();
-	//int j = 0;
-	//CString str;
-	//for (int i = 0; i<size; i++)
-	//{
-	//	road[i] = root["Result"][i]["ID"].asInt();
-	//	string name = root["Result"][i]["Name"].asString();
-	//	str = name.c_str();
-	//	m_chose1.InsertString(i, str);
-
-	//	j = 0;
-	//	city[2 * i] = root["Result"][i]["Endpoint"][j]["Name"].asString();
-	//	j = 1;
-	//	city[2 * i + 1] = root["Result"][i]["Endpoint"][j]["Name"].asString();
-	//}
-	//city1 = city[0];
-	//city2 = city[1];
-
 	return result;
 }
 
 string getUserList(void)
 {
+	bool httpresult;
+
 	string temp, strdata;
 	strdata = "/wapi/group/users?Group=" + to_string(user_group);
 	string strFormData = "";
@@ -216,7 +197,10 @@ string getUserList(void)
 	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
 	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_GET, (CString)strdata.c_str());
 	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
-	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	if (!httpresult)
+		return "{ \"ErrCode\":20000017，\"ErrMsg\":\"服务器连接失败\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -242,31 +226,13 @@ string getUserList(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//解析道路信息
+	Json::Reader reader;//解析信息
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
 		return "{ \"ErrCode\":20000016，\"ErrMsg\":\"服务器信息无法解析\"}";
 	}
-
-	//int size = root["Result"].size();
-	//int j = 0;
-	//CString str;
-	//for (int i = 0; i<size; i++)
-	//{
-	//	road[i] = root["Result"][i]["ID"].asInt();
-	//	string name = root["Result"][i]["Name"].asString();
-	//	str = name.c_str();
-	//	m_chose1.InsertString(i, str);
-
-	//	j = 0;
-	//	city[2 * i] = root["Result"][i]["Endpoint"][j]["Name"].asString();
-	//	j = 1;
-	//	city[2 * i + 1] = root["Result"][i]["Endpoint"][j]["Name"].asString();
-	//}
-	//city1 = city[0];
-	//city2 = city[1];
 
 	return result;
 }
@@ -278,13 +244,18 @@ string addUser(string userName, string pwd, string usernick, string group, strin
 	if ((!isAllDigit(userName)) || (!isAllDigit(pwd)) || (!isAllDigit(group))|| (!isAllDigit(role)))
 		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号、密码、组号、权限应为数字\"}";
 
+	bool httpresult;
+
 	string strFormData = "Username=" + userName + "&Password=" + pwd + "&Nick=" + usernick + "&Group=" + to_string(user_group) + "&Role=" + role;
 	CInternetSession session(_T("session"));
 	INTERNET_PORT nPort = 10001;
 	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
 	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_POST, _T("/wapi/group/users"));
 	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
-	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	if (!httpresult)
+		return "{ \"ErrCode\":20000017，\"ErrMsg\":\"服务器连接失败\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -309,7 +280,7 @@ string addUser(string userName, string pwd, string usernick, string group, strin
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//解析道路信息
+	Json::Reader reader;//解析信息
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
@@ -327,13 +298,18 @@ string deleteUser(string userName)
 	if ((!isAllDigit(userName)))
 		return "{ \"ErrCode\":20000015，\"ErrMsg\":\"账号应为6位数字\"}";
 
+	bool httpresult;
+
 	string strFormData = "Group=" + to_string(user_group) + "&Username=" + userName;
 	CInternetSession session(_T("session"));
 	INTERNET_PORT nPort = 10001;
 	CHttpConnection* pHttpConnect = session.GetHttpConnection(_T("zjt.iotcloudsoft.com"), nPort);
 	CHttpFile* pFile = pHttpConnect->OpenRequest(CHttpConnection::HTTP_VERB_DELETE, _T("/wapi/group/users"));
 	pFile->AddRequestHeaders(_T("Content-Type: application/x-www-form-urlencoded"));
-	pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
+
+	if (!httpresult)
+		return "{ \"ErrCode\":20000017，\"ErrMsg\":\"服务器连接失败\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -358,7 +334,7 @@ string deleteUser(string userName)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//解析道路信息
+	Json::Reader reader;//解析信息
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
@@ -369,22 +345,82 @@ string deleteUser(string userName)
 	return result;
 }
 
-int test(void)
+list <Roadlist> handleRoadList(string RoadListInfo)
 {
-	int result;
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+	Roadlist temp;
 
-	if (reader.parse(str, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素  
+	reader.parse(RoadListInfo, root, false);
+
+	list <Roadlist> templist(0);
+	int size = root["Result"].size();
+
+	for (int i = 0; i<size; i++)
 	{
-		std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"  
-		result = root["code"].asInt();    // 访问节点，code = 100
+		temp.id = root["Result"][i]["ID"].asInt();
+		temp.name = root["Result"][i]["Name"].asString();
+		temp.endpoint1_id = root["Result"][i]["Endpoint"][0]["ID"].asString();
+		temp.endpoint1 = root["Result"][i]["Endpoint"][0]["Name"].asString();
+		temp.endpoint2_id = root["Result"][i]["Endpoint"][1]["ID"].asString();
+		temp.endpoint2 = root["Result"][i]["Endpoint"][1]["Name"].asString();
+
+		templist.push_back(temp);
 	}
 
-	return result;
+	return templist;
 }
 
-int test1(void)
+list <DeviceList> handleDeviceList(string DeviceListInfo)
 {
-	return 101;
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+	DeviceList temp;
+
+	reader.parse(DeviceListInfo, root, false);
+
+	list <DeviceList> templist(0);
+	int size = root["Result"].size();
+
+	for (int i = 0; i<size; i++)
+	{
+		temp.ID = root["Result"][i]["ID"].asString();
+		temp.Model = root["Result"][i]["Model"].asString();
+		temp.Phone = root["Result"][i]["Phone"].asString();
+		temp.Road = root["Result"][i]["Road"].asInt();
+		temp.RoadName = root["Result"][i]["RoadName"].asString();
+		temp.Direct = root["Result"][i]["Direct"].asInt();
+		temp.Mile = root["Result"][i]["Mile"].asInt();
+		temp.PPTGroupName = root["Result"][i]["PPTGroupName"].asString();
+		temp.PPTDeviceName = root["Result"][i]["PPTDeviceName"].asString();
+
+		templist.push_back(temp);
+	}
+
+	return templist;
+}
+
+list <UserList> handleUserList(string UserListInfo)
+{
+	Json::Reader reader;//解析道路信息
+	Json::Value root;
+	UserList temp;
+
+	reader.parse(UserListInfo, root, false);
+
+	list <UserList> templist(0);
+	int size = root["Result"].size();
+
+	for (int i = 0; i<size; i++)
+	{
+		temp.Username = root["Result"][i]["Username"].asString();
+		temp.Nick = root["Result"][i]["Nick"].asString();
+		temp.Role = root["Result"][i]["Role"].asInt();
+
+		templist.push_back(temp);
+	}
+
+	return templist;
 }
 
 void UTF8toANSI(string &strUTF8)
@@ -438,4 +474,22 @@ bool isAllDigit(string str)
 		}
 	}
 	return true;
+}
+
+int test(void)
+{
+	int result;
+
+	if (reader.parse(str, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素  
+	{
+		std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"  
+		result = root["code"].asInt();    // 访问节点，code = 100
+	}
+
+	return result;
+}
+
+int test1(void)
+{
+	return 101;
 }
