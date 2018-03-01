@@ -23,6 +23,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//temp1 = login("444444", "444443", pwd);
 	//temp1 = login("444444", "444444", pwd);
 	temp1 = login(user, pwd, pwd);
+	//temp1 = logout();
 	temp2 = getRoadList();
 	temp3 = handleRoadList(temp2);
 	temp2 = getDeviceList();
@@ -40,10 +41,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	temp6 = handleMusicList(tempstr);
 	tempstr = mqttSetTTS(user, pwd, deviceid, "18182424");
 	tempstr = mqttSetPTT(user, pwd, deviceid);
-	tempstr = mqttSetSYS(user, pwd, deviceid, timing, immediately, Quickly, Continuity, temp6[0]);
-	tempstr = mqttSetSYS(user, pwd, deviceid, timing, immediately, Quickly, Continuity, temp6[11]);
+	//tempstr = mqttSetSYS(user, pwd, deviceid, timing, immediately, Quickly, Continuity, temp6[0]);
+	//tempstr = mqttSetSYS(user, pwd, deviceid, timing, immediately, Quickly, Continuity, temp6[11]);
 	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
 
 	return 0;
 }
-

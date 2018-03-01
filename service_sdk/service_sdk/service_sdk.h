@@ -66,6 +66,7 @@ struct SystemState {
 };
 
 extern string login(string username, string password, string myControllerId);
+extern string logout(void);
 extern string getRoadList(void);
 extern string getDeviceList(void);
 extern string getUserList(void);
@@ -75,7 +76,12 @@ extern string mqttAskSystem(string username, string password, string deviceid, S
 extern string mqttAskList(string username, string password, string deviceid);
 extern string mqttSetTTS(string username, string password, string deviceid, string gbk);
 extern string mqttSetPTT(string username, string password, string deviceid);
-extern string mqttSetSYS(string username, string password, string deviceid, int8_t *timing, int8_t *immediately, LightType lighttype, ModeType modetype, MusicList music);
+//extern string mqttSetSYS(string username, string password, string deviceid, int8_t *timing, int8_t *immediately, LightType lighttype, ModeType modetype, MusicList music);
+extern string mqttSetDeviceTiming(string username, string password, string deviceid, int8_t *timing, LightType lighttype, MusicList music);
+extern string mqttSetDeviceStop(string username, string password, string deviceid, LightType lighttype, MusicList music);
+extern string mqttSetDeviceTrigger(string username, string password, string deviceid, LightType lighttype, MusicList music);
+extern string mqttSetDeviceContinuity(string username, string password, string deviceid, LightType lighttype, MusicList music);
+extern string mqttSetDeviceImmediately(string username, string password, string deviceid, int8_t *immediately, LightType lighttype, MusicList music);
 extern vector <Roadlist> handleRoadList(string RoadListInfo);
 extern vector <DeviceList> handleDeviceList(string DeviceListInfo);
 extern vector <UserList> handleUserList(string UserListInfo);
