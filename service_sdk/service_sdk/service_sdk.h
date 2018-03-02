@@ -78,7 +78,7 @@ extern string mqttSetTTS(string username, string password, string deviceid, stri
 extern string mqttSetPTT(string username, string password, string deviceid);
 //extern string mqttSetSYS(string username, string password, string deviceid, int8_t *timing, int8_t *immediately, LightType lighttype, ModeType modetype, MusicList music);
 extern string mqttSetDeviceTiming(string username, string password, string deviceid, int8_t *timing, LightType lighttype, MusicList music);
-extern string mqttSetDeviceStop(string username, string password, string deviceid, LightType lighttype, MusicList music);
+extern string mqttSetDeviceStop(string username, string password, string deviceid);
 extern string mqttSetDeviceTrigger(string username, string password, string deviceid, LightType lighttype, MusicList music);
 extern string mqttSetDeviceContinuity(string username, string password, string deviceid, LightType lighttype, MusicList music);
 extern string mqttSetDeviceImmediately(string username, string password, string deviceid, int8_t *immediately, LightType lighttype, MusicList music);

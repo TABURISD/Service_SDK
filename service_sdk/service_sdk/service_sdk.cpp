@@ -1294,7 +1294,7 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
 }
 
-string mqttSetDeviceStop(string username, string password, string deviceid, LightType lighttype, MusicList music)
+string mqttSetDeviceStop(string username, string password, string deviceid)
 {
 	time_t start, stop;
 	const char * payload;
@@ -1304,10 +1304,6 @@ string mqttSetDeviceStop(string username, string password, string deviceid, Ligh
 	payload = temppayload.c_str();
 
 	{
-		temppayload[85] = lighttype + 0x30;
-		temppayload[87] = music.id / 10 + 0x30;
-		temppayload[88] = music.id % 10 + 0x30;
-
 		time_t temptime = time(NULL);
 		struct tm *now_time = localtime(&temptime);
 		temppayload[92] = now_time->tm_hour / 10 + 0x30;

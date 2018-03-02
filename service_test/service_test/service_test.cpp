@@ -17,7 +17,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	vector <MusicList> temp6;
 	SystemState temp7;
 	int8_t timing[12] = { 0,0,0,0,0,0,0,0,0,0,0,1 };
-	int8_t immediately[2] = { 0,0 };
+	int8_t immediately[2] = { 0,1 };
+	int8_t immediately1[2] = { 0,2 };
 
 	//temp1 = login("444444", "44444", pwd);
 	//temp1 = login("444444", "444443", pwd);
@@ -39,10 +40,31 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	tempstr = mqttAskList(user, pwd, deviceid);
 	temp6 = handleMusicList(tempstr);
-	tempstr = mqttSetTTS(user, pwd, deviceid, "18182424");
+	tempstr = mqttSetTTS(user, pwd, deviceid, "今天是三月二日");
 	tempstr = mqttSetPTT(user, pwd, deviceid);
 	//tempstr = mqttSetSYS(user, pwd, deviceid, timing, immediately, Quickly, Continuity, temp6[0]);
 	//tempstr = mqttSetSYS(user, pwd, deviceid, timing, immediately, Quickly, Continuity, temp6[11]);
+	tempstr = mqttSetDeviceTiming(user, pwd, deviceid, timing, Quickly, temp6[5]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceTiming(user, pwd, deviceid, timing, Quickly, temp6[4]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceTiming(user, pwd, deviceid, timing, Quickly, temp6[6]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceTiming(user, pwd, deviceid, timing, Quickly, temp6[7]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceImmediately(user, pwd, deviceid, immediately, Quickly, temp6[11]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceImmediately(user, pwd, deviceid, immediately, Quickly, temp6[12]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceImmediately(user, pwd, deviceid, immediately, Quickly, temp6[10]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceImmediately(user, pwd, deviceid, immediately, Quickly, temp6[9]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceImmediately(user, pwd, deviceid, immediately, Quickly, temp6[8]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceContinuity(user, pwd, deviceid, Quickly, temp6[6]);
+	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
+	tempstr = mqttSetDeviceStop(user, pwd, deviceid);
 	tempstr = mqttAskSystem(user, pwd, deviceid, &temp7);
 
 	return 0;
