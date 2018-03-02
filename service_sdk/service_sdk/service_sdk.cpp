@@ -8,8 +8,8 @@ static int str_to_hex(char *string, wchar_t *cbuf, int len);
 static string string_to_hex(const string& str);
 
 static string username_now, password_now;
-static bool islogin = true;
-static int user_group;//ÓÃ»§È¨ÏŞ×é
+static bool islogin = false;
+static int user_group;//ç”¨æˆ·æƒé™ç»„
 static int user_role;
 static const std::string SERVER_ADDRESS("tcp://139.196.136.90:1883");
 static const auto TIMEOUT = std::chrono::seconds(10);
@@ -91,14 +91,14 @@ public:
 
 ///////////////////////////////////////
 
-string login(string username,string password,string myControllerId)//ÓÃ»§µÇÂ¼
+string login(string username,string password,string myControllerId)//ç”¨æˆ·ç™»å½•
 {
 	if ((username.length() != 6) || (password.length() != 6))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)) || (!isAllDigit(password)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -116,7 +116,7 @@ string login(string username,string password,string myControllerId)//ÓÃ»§µÇÂ¼
 	httpresult=pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -142,12 +142,12 @@ string login(string username,string password,string myControllerId)//ÓÃ»§µÇÂ¼
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if (root["ErrCode"].asInt() == 0)
@@ -160,7 +160,7 @@ string login(string username,string password,string myControllerId)//ÓÃ»§µÇÂ¼
 		password_now = password;
 		islogin = true;
 
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"µÇÂ½³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"ç™»é™†æˆåŠŸ\"}";
 	} else {
 		return result;
 	}
@@ -178,7 +178,7 @@ string logout(void)
 	httpresult = pFile->SendRequest(NULL, 0, "", 0);
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -204,12 +204,12 @@ string logout(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if (root["ErrCode"].asInt() == 0)
@@ -218,7 +218,7 @@ string logout(void)
 		password_now = "";
 		islogin = false;
 
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"µÇ³ö³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"ç™»å‡ºæˆåŠŸ\"}";
 	}
 	else {
 		return result;
@@ -238,7 +238,7 @@ string getRoadList(void)
 	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -264,12 +264,12 @@ string getRoadList(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if ((result.find("20000001") != string::npos) && (islogin))
@@ -287,7 +287,7 @@ string getRoadList(void)
 		httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 		if (!httpresult)
-			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 		DWORD dwRet;
 		pFile->QueryInfoStatusCode(dwRet);
@@ -312,12 +312,12 @@ string getRoadList(void)
 		pHttpConnect = NULL;
 		session.Close();
 
-		Json::Reader reader;//½âÎöĞÅÏ¢
+		Json::Reader reader;//è§£æä¿¡æ¯
 		Json::Value root;
 
 		if (!reader.parse(result, root, false))
 		{
-			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 		}
 	}
 
@@ -339,7 +339,7 @@ string getDeviceList(void)
 	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -365,12 +365,12 @@ string getDeviceList(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if ((result.find("20000001") != string::npos) && (islogin))
@@ -388,7 +388,7 @@ string getDeviceList(void)
 		httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 		if (!httpresult)
-			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 		DWORD dwRet;
 		pFile->QueryInfoStatusCode(dwRet);
@@ -413,12 +413,12 @@ string getDeviceList(void)
 		pHttpConnect = NULL;
 		session.Close();
 
-		Json::Reader reader;//½âÎöĞÅÏ¢
+		Json::Reader reader;//è§£æä¿¡æ¯
 		Json::Value root;
 
 		if (!reader.parse(result, root, false))
 		{
-			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 		}
 	}
 
@@ -440,7 +440,7 @@ string getUserList(void)
 	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -466,12 +466,12 @@ string getUserList(void)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if ((result.find("20000001") != string::npos) && (islogin))
@@ -489,7 +489,7 @@ string getUserList(void)
 		httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 		if (!httpresult)
-			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 		DWORD dwRet;
 		pFile->QueryInfoStatusCode(dwRet);
@@ -514,12 +514,12 @@ string getUserList(void)
 		pHttpConnect = NULL;
 		session.Close();
 
-		Json::Reader reader;//½âÎöĞÅÏ¢
+		Json::Reader reader;//è§£æä¿¡æ¯
 		Json::Value root;
 
 		if (!reader.parse(result, root, false))
 		{
-			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 		}
 	}
 
@@ -529,9 +529,9 @@ string getUserList(void)
 string addUser(string username, string password, string usernick, string role)
 {
 	if ((username.length() != 6) || (password.length() != 6) || (role.length() != 3))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö¡¢È¨ÏŞÓ¦Îª3Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—ã€æƒé™åº”ä¸º3ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)) || (!isAllDigit(password)) || (!isAllDigit(role)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅ¡¢ÃÜÂë¡¢È¨ÏŞÓ¦ÎªÊı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ã€å¯†ç ã€æƒé™åº”ä¸ºæ•°å­—\"}";
 
 	bool httpresult;
 
@@ -544,7 +544,7 @@ string addUser(string username, string password, string usernick, string role)
 	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -569,12 +569,12 @@ string addUser(string username, string password, string usernick, string role)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if ((result.find("20000001") != string::npos) && (islogin))
@@ -590,7 +590,7 @@ string addUser(string username, string password, string usernick, string role)
 		httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 		if (!httpresult)
-			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 		DWORD dwRet;
 		pFile->QueryInfoStatusCode(dwRet);
@@ -614,12 +614,12 @@ string addUser(string username, string password, string usernick, string role)
 		pHttpConnect = NULL;
 		session.Close();
 
-		Json::Reader reader;//½âÎöĞÅÏ¢
+		Json::Reader reader;//è§£æä¿¡æ¯
 		Json::Value root;
 
 		if (!reader.parse(result, root, false))
 		{
-			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 		}
 	}
 
@@ -630,9 +630,9 @@ string addUser(string username, string password, string usernick, string role)
 string deleteUser(string username)
 {
 	if ((username.length() != 6))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·åº”ä¸º6ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·åº”ä¸º6ä½æ•°å­—\"}";
 
 	bool httpresult;
 
@@ -645,7 +645,7 @@ string deleteUser(string username)
 	httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 	if (!httpresult)
-		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 	DWORD dwRet;
 	pFile->QueryInfoStatusCode(dwRet);
@@ -670,12 +670,12 @@ string deleteUser(string username)
 	pHttpConnect = NULL;
 	session.Close();
 
-	Json::Reader reader;//½âÎöĞÅÏ¢
+	Json::Reader reader;//è§£æä¿¡æ¯
 	Json::Value root;
 
 	if (!reader.parse(result, root, false))
 	{
-		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+		return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 	}
 
 	if ((result.find("20000001") != string::npos) && (islogin))
@@ -691,7 +691,7 @@ string deleteUser(string username)
 		httpresult = pFile->SendRequest(NULL, 0, (LPVOID)(LPCTSTR)strFormData.c_str(), strFormData.size());
 
 		if (!httpresult)
-			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+			return "{ \"ErrCode\":20000017,\"ErrMsg\":\"æœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 
 		DWORD dwRet;
 		pFile->QueryInfoStatusCode(dwRet);
@@ -716,12 +716,12 @@ string deleteUser(string username)
 		pHttpConnect = NULL;
 		session.Close();
 
-		Json::Reader reader;//½âÎöĞÅÏ¢
+		Json::Reader reader;//è§£æä¿¡æ¯
 		Json::Value root;
 
 		if (!reader.parse(result, root, false))
 		{
-			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"·şÎñÆ÷ĞÅÏ¢ÎŞ·¨½âÎö\"}";
+			return "{ \"ErrCode\":20000016,\"ErrMsg\":\"æœåŠ¡å™¨ä¿¡æ¯æ— æ³•è§£æ\"}";
 		}
 	}
 
@@ -735,16 +735,16 @@ string mqttAskSystem(string username, string password, string deviceid, SystemSt
 	const char * payload = { "{\"Type\":\" ASKSYS\"}" };
 
 	if ((username.length() != 6) || (password.length() != 6))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)) || (!isAllDigit(password)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 
 	mqtt::connect_options connOpts;
 	connOpts.set_keep_alive_interval(10);
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -761,7 +761,7 @@ string mqttAskSystem(string username, string password, string deviceid, SystemSt
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -771,11 +771,11 @@ string mqttAskSystem(string username, string password, string deviceid, SystemSt
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
-	Json::Reader reader;//½âÎöµÀÂ·ĞÅÏ¢
+	Json::Reader reader;//è§£æé“è·¯ä¿¡æ¯
 	Json::Value root;
 
 	string json = cb.msg_ret->to_string();
@@ -811,7 +811,7 @@ string mqttAskSystem(string username, string password, string deviceid, SystemSt
 	systemstate->time[0] = (sysstate[68] - 0x30) * 10 + (sysstate[69] - 0x30);
 	systemstate->time[1] = (sysstate[71] - 0x30) * 10 + (root["Str"].asString()[72] - 0x30);
 
-	return "{ \"ErrCode\":0,\"Result\":\"»ñÈ¡³É¹¦\"}";
+	return "{ \"ErrCode\":0,\"Result\":\"è·å–æˆåŠŸ\"}";
 }
 
 string mqttAskList(string username, string password, string deviceid)
@@ -820,16 +820,16 @@ string mqttAskList(string username, string password, string deviceid)
 	const char * payload = { "{\"Type\":\" ASKLIST\"}" };
 
 	if ((username.length() != 6) || (password.length() != 6))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)) || (!isAllDigit(password)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 
 	mqtt::connect_options connOpts;
 	connOpts.set_keep_alive_interval(10);
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -846,7 +846,7 @@ string mqttAskList(string username, string password, string deviceid)
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -856,11 +856,11 @@ string mqttAskList(string username, string password, string deviceid)
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
-	Json::Reader reader;//½âÎöµÀÂ·ĞÅÏ¢
+	Json::Reader reader;//è§£æé“è·¯ä¿¡æ¯
 	Json::Value root;
 
 	string json = cb.msg_ret->to_string();
@@ -870,7 +870,7 @@ string mqttAskList(string username, string password, string deviceid)
 	client.unsubscribe("device/info/" + deviceid)->wait_for(TIMEOUT);
 	client.disconnect()->wait_for(TIMEOUT);
 
-	unsigned int listcount;//È¡ÁĞ±í´óĞ¡
+	unsigned int listcount;//å–åˆ—è¡¨å¤§å°
 	listcount = atoi(root["Num"].asString().c_str());///////////////////////////////////////////////////////////////////////////
 
 	char *templist[48];
@@ -881,7 +881,7 @@ string mqttAskList(string username, string password, string deviceid)
 	}
 	char* tempptr = const_cast<char*>(tempstr.c_str());
 	//tempptr = tempptr + sizeof(char);
-	templist[0] = strtok(tempptr, "#");//È¡ÁĞ±íÄÚÈİ
+	templist[0] = strtok(tempptr, "#");//å–åˆ—è¡¨å†…å®¹
 
 	for (unsigned int i = 0; i < listcount; i++)
 	{
@@ -924,11 +924,11 @@ string mqttSetTTS(string username, string password, string deviceid, string gbk)
 	string temppayload;
 
 	if ((username.length() != 6) || (password.length() != 6))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)) || (!isAllDigit(password)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	if (gbk.length()>76)
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÊäÈëÄÚÈİ¹ı³¤\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è¾“å…¥å†…å®¹è¿‡é•¿\"}";
 
 	temppayload = { "{\"Type\":\"SETTTS\",\"Str\":\"" + string_to_hex(gbk) + "\"}" };
 	payload = temppayload.c_str();
@@ -938,7 +938,7 @@ string mqttSetTTS(string username, string password, string deviceid, string gbk)
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -955,7 +955,7 @@ string mqttSetTTS(string username, string password, string deviceid, string gbk)
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -965,7 +965,7 @@ string mqttSetTTS(string username, string password, string deviceid, string gbk)
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -973,9 +973,9 @@ string mqttSetTTS(string username, string password, string deviceid, string gbk)
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (temppayload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 string mqttSetPTT(string username, string password, string deviceid)
@@ -984,16 +984,16 @@ string mqttSetPTT(string username, string password, string deviceid)
 	const char * payload = { "{\"Type\":\"SETPTT\"}" };
 
 	if ((username.length() != 6) || (password.length() != 6))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 	if ((!isAllDigit(username)) || (!isAllDigit(password)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ÕËºÅÓëÃÜÂëÓ¦Îª6Î»Êı×Ö\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"è´¦å·ä¸å¯†ç åº”ä¸º6ä½æ•°å­—\"}";
 
 	mqtt::connect_options connOpts;
 	connOpts.set_keep_alive_interval(10);
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1010,7 +1010,7 @@ string mqttSetPTT(string username, string password, string deviceid)
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1020,7 +1020,7 @@ string mqttSetPTT(string username, string password, string deviceid)
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1028,9 +1028,9 @@ string mqttSetPTT(string username, string password, string deviceid)
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 /*string mqttSetSYS(string username, string password, string deviceid, int8_t *timing, int8_t *immediately, LightType lighttype, ModeType modetype, MusicList music)
@@ -1045,9 +1045,9 @@ string mqttSetPTT(string username, string password, string deviceid)
 	for (unsigned char i = 0; i < 6; i++)
 	{
 		if (!((timing[2 * i] >= 0) && (timing[2 * i] <= 23)))
-			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 		if (!((timing[2 * i + 1] >= 0) && (timing[2 * i + 1] <= 59)))
-			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	}
 
 	int16_t timing1, timing2, timing3, timing4, timing5, timing6;
@@ -1060,20 +1060,20 @@ string mqttSetPTT(string username, string password, string deviceid)
 	timing6 = timing[10] * 60 + timing[11];
 
 	if ((!((timing1 == 0) && (timing2 == 0))) && (timing2 < timing1))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((!((timing3 == 0) && (timing4 == 0))) && (timing4 < timing3))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((!((timing5 == 0) && (timing6 == 0))) && (timing6 < timing5))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((modetype == Timing) && (timing1 == 0) && (timing2 == 0) && (timing3 == 0) && (timing4 == 0) && (timing5 == 0) && (timing6 == 0))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"TimingÄ£Ê½ÏÂtiming²ÎÊı²»ÄÜÈ«²¿Îª0\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"Timingæ¨¡å¼ä¸‹timingå‚æ•°ä¸èƒ½å…¨éƒ¨ä¸º0\"}";
 
 	if (!((immediately[0] >= 0) && (immediately[0] <= 23)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediately²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediatelyå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if (!((immediately[1] >= 0) && (immediately[1] <= 59)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediately²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediatelyå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((modetype == Immediately) && (immediately[0] == 0) && (immediately[1] == 0))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ImmediatelyÄ£Ê½ÏÂimmediately²ÎÊı²»ÄÜÎª0\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"Immediatelyæ¨¡å¼ä¸‹immediatelyå‚æ•°ä¸èƒ½ä¸º0\"}";
 
 	{
 		temppayload[27] = timing[0] / 10 + 0x30;
@@ -1130,7 +1130,7 @@ string mqttSetPTT(string username, string password, string deviceid)
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1147,7 +1147,7 @@ string mqttSetPTT(string username, string password, string deviceid)
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1157,7 +1157,7 @@ string mqttSetPTT(string username, string password, string deviceid)
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1165,9 +1165,9 @@ string mqttSetPTT(string username, string password, string deviceid)
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }*/
 
 string mqttSetDeviceTiming(string username, string password, string deviceid, int8_t *timing, LightType lighttype, MusicList music)
@@ -1182,9 +1182,9 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 	for (unsigned char i = 0; i < 6; i++)
 	{
 		if (!((timing[2 * i] >= 0) && (timing[2 * i] <= 23)))
-			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 		if (!((timing[2 * i + 1] >= 0) && (timing[2 * i + 1] <= 59)))
-			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+			return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	}
 
 	int16_t timing1, timing2, timing3, timing4, timing5, timing6;
@@ -1197,13 +1197,13 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 	timing6 = timing[10] * 60 + timing[11];
 
 	if ((!((timing1 == 0) && (timing2 == 0))) && (timing2 < timing1))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((!((timing3 == 0) && (timing4 == 0))) && (timing4 < timing3))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((!((timing5 == 0) && (timing6 == 0))) && (timing6 < timing5))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timing²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"timingå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((timing1 == 0) && (timing2 == 0) && (timing3 == 0) && (timing4 == 0) && (timing5 == 0) && (timing6 == 0))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"TimingÄ£Ê½ÏÂtiming²ÎÊı²»ÄÜÈ«²¿Îª0\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"Timingæ¨¡å¼ä¸‹timingå‚æ•°ä¸èƒ½å…¨éƒ¨ä¸º0\"}";
 
 	{
 		temppayload[27] = timing[0] / 10 + 0x30;
@@ -1254,7 +1254,7 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1271,7 +1271,7 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1281,7 +1281,7 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1289,9 +1289,9 @@ string mqttSetDeviceTiming(string username, string password, string deviceid, in
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 string mqttSetDeviceStop(string username, string password, string deviceid)
@@ -1317,7 +1317,7 @@ string mqttSetDeviceStop(string username, string password, string deviceid)
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1334,7 +1334,7 @@ string mqttSetDeviceStop(string username, string password, string deviceid)
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1344,7 +1344,7 @@ string mqttSetDeviceStop(string username, string password, string deviceid)
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1352,9 +1352,9 @@ string mqttSetDeviceStop(string username, string password, string deviceid)
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 string mqttSetDeviceTrigger(string username, string password, string deviceid, LightType lighttype, MusicList music)
@@ -1385,7 +1385,7 @@ string mqttSetDeviceTrigger(string username, string password, string deviceid, L
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1402,7 +1402,7 @@ string mqttSetDeviceTrigger(string username, string password, string deviceid, L
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1412,7 +1412,7 @@ string mqttSetDeviceTrigger(string username, string password, string deviceid, L
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1420,9 +1420,9 @@ string mqttSetDeviceTrigger(string username, string password, string deviceid, L
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 string mqttSetDeviceContinuity(string username, string password, string deviceid, LightType lighttype, MusicList music)
@@ -1454,7 +1454,7 @@ string mqttSetDeviceContinuity(string username, string password, string deviceid
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1471,7 +1471,7 @@ string mqttSetDeviceContinuity(string username, string password, string deviceid
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1481,7 +1481,7 @@ string mqttSetDeviceContinuity(string username, string password, string deviceid
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1489,9 +1489,9 @@ string mqttSetDeviceContinuity(string username, string password, string deviceid
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 string mqttSetDeviceImmediately(string username, string password, string deviceid, int8_t *immediately, LightType lighttype, MusicList music)
@@ -1505,11 +1505,11 @@ string mqttSetDeviceImmediately(string username, string password, string devicei
 
 
 	if (!((immediately[0] >= 0) && (immediately[0] <= 23)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediately²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediatelyå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if (!((immediately[1] >= 0) && (immediately[1] <= 59)))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediately²ÎÊı¸ñÊ½´íÎó\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"immediatelyå‚æ•°æ ¼å¼é”™è¯¯\"}";
 	if ((immediately[0] == 0) && (immediately[1] == 0))
-		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"ImmediatelyÄ£Ê½ÏÂimmediately²ÎÊı²»ÄÜÈ«Îª0\"}";
+		return "{ \"ErrCode\":20000015,\"ErrMsg\":\"Immediatelyæ¨¡å¼ä¸‹immediatelyå‚æ•°ä¸èƒ½å…¨ä¸º0\"}";
 
 	{
 		temppayload[75] = immediately[0] / 10 + 0x30;
@@ -1535,7 +1535,7 @@ string mqttSetDeviceImmediately(string username, string password, string devicei
 	connOpts.set_clean_session(true);
 	connOpts.set_user_name("1#" + username);
 
-	MD5 md5;//¼ÓÃÜÓÃ»§ÃÜÂë
+	MD5 md5;//åŠ å¯†ç”¨æˆ·å¯†ç 
 	md5.update(password);
 	string passwordval = md5.toString();
 	md5.reset();
@@ -1552,7 +1552,7 @@ string mqttSetDeviceImmediately(string username, string password, string devicei
 		client.publish("command/control/" + deviceid, payload, strlen(payload), 1, false)->wait_for(TIMEOUT);
 	}
 	catch (const mqtt::exception&) {
-		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTT·şÎñÆ÷Á¬½ÓÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000018,\"ErrMsg\":\"MQTTæœåŠ¡å™¨è¿æ¥å¤±è´¥\"}";
 	}
 
 	start = time(NULL);
@@ -1562,7 +1562,7 @@ string mqttSetDeviceImmediately(string username, string password, string devicei
 			break;
 		stop = time(NULL);
 		if ((stop - start) >= 10)
-			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTÁ¬½Ó³¬Ê±\"}";
+			return "{ \"ErrCode\":20000019,\"ErrMsg\":\"MQTTè¿æ¥è¶…æ—¶\"}";
 	}
 	callback_flag = false;
 
@@ -1570,14 +1570,14 @@ string mqttSetDeviceImmediately(string username, string password, string devicei
 	client.disconnect()->wait_for(TIMEOUT);
 
 	if (payload == cb.msg_ret->to_string())
-		return "{ \"ErrCode\":0,\"ErrMsg\":\"ÉèÖÃ³É¹¦\"}";
+		return "{ \"ErrCode\":0,\"ErrMsg\":\"è®¾ç½®æˆåŠŸ\"}";
 	else
-		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTÉèÖÃÊ§°Ü\"}";
+		return "{ \"ErrCode\":20000020 ,\"ErrMsg\":\"MQTTè®¾ç½®å¤±è´¥\"}";
 }
 
 vector <MusicList> handleMusicList(string MusicListInfo)
 {
-	Json::Reader reader;//½âÎöµÀÂ·ĞÅÏ¢
+	Json::Reader reader;//è§£æé“è·¯ä¿¡æ¯
 	Json::Value root;
 	MusicList temp;
 	wchar_t tempwchar[5];
@@ -1597,19 +1597,19 @@ vector <MusicList> handleMusicList(string MusicListInfo)
 	}
 
 	temp.id = 29;
-	temp.name = L"¾¯Òô¿ì";
+	temp.name = L"è­¦éŸ³å¿«";
 	templist.push_back(temp);
 	temp.id = 30;
-	temp.name = L"¾¯ÒôÂı";
+	temp.name = L"è­¦éŸ³æ…¢";
 	templist.push_back(temp);
 	temp.id = 31;
-	temp.name = L"Â¼Òô²¥·Å";
+	temp.name = L"å½•éŸ³æ’­æ”¾";
 	templist.push_back(temp);
 	temp.id = 32;
-	temp.name = L"ÎÄ×Ö²¥·Å";
+	temp.name = L"æ–‡å­—æ’­æ”¾";
 	templist.push_back(temp);
 	temp.id = 0;
-	temp.name = L"¹Ø±Õ¾¯Òô";
+	temp.name = L"å…³é—­è­¦éŸ³";
 	templist.push_back(temp);
 
 	return templist;
@@ -1617,7 +1617,7 @@ vector <MusicList> handleMusicList(string MusicListInfo)
 
 vector <Roadlist> handleRoadList(string RoadListInfo)
 {
-	Json::Reader reader;//½âÎöµÀÂ·ĞÅÏ¢
+	Json::Reader reader;//è§£æé“è·¯ä¿¡æ¯
 	Json::Value root;
 	Roadlist temp;
 
@@ -1643,7 +1643,7 @@ vector <Roadlist> handleRoadList(string RoadListInfo)
 
 vector <DeviceList> handleDeviceList(string DeviceListInfo)
 {
-	Json::Reader reader;//½âÎöµÀÂ·ĞÅÏ¢
+	Json::Reader reader;//è§£æé“è·¯ä¿¡æ¯
 	Json::Value root;
 	DeviceList temp;
 
@@ -1672,7 +1672,7 @@ vector <DeviceList> handleDeviceList(string DeviceListInfo)
 
 vector <UserList> handleUserList(string UserListInfo)
 {
-	Json::Reader reader;//½âÎöµÀÂ·ĞÅÏ¢
+	Json::Reader reader;//è§£æé“è·¯ä¿¡æ¯
 	Json::Value root;
 	UserList temp;
 
@@ -1698,7 +1698,7 @@ vector <UserList> handleUserList(string UserListInfo)
 
 static void UTF8toANSI(string &strUTF8)
 {
-	//»ñÈ¡×ª»»Îª¶à×Ö½ÚºóĞèÒªµÄ»º³åÇø´óĞ¡,´´½¨¶à×Ö½Ú»º³åÇø
+	//è·å–è½¬æ¢ä¸ºå¤šå­—èŠ‚åéœ€è¦çš„ç¼“å†²åŒºå¤§å°,åˆ›å»ºå¤šå­—èŠ‚ç¼“å†²åŒº
 	UINT nLen = MultiByteToWideChar(CP_UTF8, NULL, strUTF8.c_str(), -1, NULL, NULL);
 	WCHAR *wszBuffer = new WCHAR[nLen + 1];
 	nLen = MultiByteToWideChar(CP_UTF8, NULL, strUTF8.c_str(), -1, wszBuffer, nLen);
@@ -1710,7 +1710,7 @@ static void UTF8toANSI(string &strUTF8)
 	szBuffer[nLen] = 0;
 
 	strUTF8 = szBuffer;
-	//ÇåÀíÄÚ´æ
+	//æ¸…ç†å†…å­˜
 	delete[]szBuffer;
 	szBuffer = NULL;
 	delete[]wszBuffer;
@@ -1719,19 +1719,19 @@ static void UTF8toANSI(string &strUTF8)
 
 static void ANSItoUTF8(string &strAnsi)
 {
-	//»ñÈ¡×ª»»Îª¿í×Ö½ÚºóĞèÒªµÄ»º³åÇø´óĞ¡,´´½¨¿í×Ö½Ú»º³åÇø,936Îª¼òÌåÖĞÎÄGB2312´úÂëÒ³  
+	//è·å–è½¬æ¢ä¸ºå®½å­—èŠ‚åéœ€è¦çš„ç¼“å†²åŒºå¤§å°,åˆ›å»ºå®½å­—èŠ‚ç¼“å†²åŒº,936ä¸ºç®€ä½“ä¸­æ–‡GB2312ä»£ç é¡µ  
 	UINT nLen = MultiByteToWideChar(936, NULL, strAnsi.c_str(), -1, NULL, NULL);
 	WCHAR *wszBuffer = new WCHAR[nLen + 1];
 	nLen = MultiByteToWideChar(936, NULL, strAnsi.c_str(), -1, wszBuffer, nLen);
 	wszBuffer[nLen] = 0;
-	//»ñÈ¡×ªÎªUTF8¶à×Ö½ÚºóĞèÒªµÄ»º³åÇø´óĞ¡,´´½¨¶à×Ö½Ú»º³åÇø  
+	//è·å–è½¬ä¸ºUTF8å¤šå­—èŠ‚åéœ€è¦çš„ç¼“å†²åŒºå¤§å°,åˆ›å»ºå¤šå­—èŠ‚ç¼“å†²åŒº  
 	nLen = WideCharToMultiByte(CP_UTF8, NULL, wszBuffer, -1, NULL, NULL, NULL, NULL);
 	CHAR *szBuffer = new CHAR[nLen + 1];
 	nLen = WideCharToMultiByte(CP_UTF8, NULL, wszBuffer, -1, szBuffer, nLen, NULL, NULL);
 	szBuffer[nLen] = 0;
 
 	strAnsi = szBuffer;
-	//ÄÚ´æÇåÀí  
+	//å†…å­˜æ¸…ç†  
 	delete[]wszBuffer;
 	delete[]szBuffer;
 }
